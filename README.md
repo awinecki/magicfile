@@ -1,5 +1,7 @@
 # Magicfile ✨
 
+![screenshot](./screenshot.png)
+
 Simple `Makefile` template for situations when:
 - You don't have a complex build system using `make`
 - You just need a simple way to document frequently used commands
