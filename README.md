@@ -1,4 +1,4 @@
-# Magicfile
+# Magicfile ✨
 
 Simple `Makefile` template for situations when:
 - You don't have a complex build system using `make`
