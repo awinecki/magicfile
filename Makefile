@@ -1,3 +1,4 @@
+SHELL = bash
 # Default params
 target ?= "staging"
 
