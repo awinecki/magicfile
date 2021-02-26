@@ -1,7 +1,14 @@
-SHELL = bash
-
+# Sane defaults
+SHELL := /bin/bash
+.ONESHELL:
+.SHELLFLAGS := -eu -o pipefail -c
+.DELETE_ON_ERROR:
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
 # Default params
 # target ?= "staging"
+
+# ---------------------- COMMANDS ---------------------------
 
 dev: # Kick-off local dev environment & start coding! 💻
 	@echo "Starting dev env (e.g. npm start).."
@@ -33,7 +40,7 @@ deploy: check-param check-dotenv # E.g. make deploy target=production
 logs:
 	tail -f *.log
 
-# Common checks
+# ----------------- COMMON CHECKS  --------------------------
 
 check-param: # [CHECK] Checks if param is present: make key=value
 	@if [ "$(target)" = "" ]; then echo -e "${ERR}Missing param: target. Try: 'make cmd target=..'${NC}"; exit 1; fi
