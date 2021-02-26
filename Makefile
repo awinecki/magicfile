@@ -3,6 +3,10 @@ SHELL = bash
 # Default params
 # target ?= "staging"
 
+dev: # Kick-off local dev environment & start coding! 💻
+	@echo "Starting dev env (e.g. npm start).."
+	@sleep 1000
+
 setup: # Setup local dev environment
 	@echo "Installing.."
 	@sleep 1
@@ -15,6 +19,11 @@ purge: # Clean up all local dev artifacts (node_modules, etc.)
 
 pr: # Create a GitHub Pull Request via https://cli.github.com/
 	@gh pr create
+
+push: check-param check-dotenv
+	@echo "Deploying to $(target).."
+	@sleep 1
+	@echo "Done. Successfully deployed to $(target)!"
 
 deploy: check-param check-dotenv # E.g. make deploy target=production
 	@echo "Deploying to $(target).."
@@ -70,7 +79,7 @@ help:
 		{printf " $(DIM1)> make $(NC)$(PRIMARY)%-$(TAB)s $(NC)$(DIM2)# %s$(NC)\n", \
 			$$1, $$2}'
 	@# Print commands without comment only
-	@grep -E '^[a-zA-Z_-]+:$$' $(MAKEFILE_LIST) \
+	@grep -E '^[a-zA-Z_-]+:( +\w+-\w+)*$$' $(MAKEFILE_LIST) \
 		| grep -v help \
 		| awk 'BEGIN {FS = ":"}; \
 		{printf " $(DIM1)> make $(NC)$(PRIMARY)%-$(TAB)s$(NC)\n", \
@@ -81,4 +90,3 @@ help:
 		| awk 'BEGIN {FS = "[: ]+#[ ]+"}; \
 		{printf " $(DIM1)> make $(NC)$(SECONDARY)%-$(TAB)s $(NC)$(DIM2)# %s$(NC)\n", \
 			$$1, $$2}'
-
