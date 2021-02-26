@@ -32,6 +32,12 @@ push: check-param check-dotenv
 	@sleep 1
 	@echo "Done. Successfully deployed to $(target)!"
 
+db.init: # Initialize DB for development
+	@echo "DB initialized."
+
+db.migrate: # Run DB migrations
+	@echo "DB migrated."
+
 deploy: check-param check-dotenv # E.g. make deploy target=production
 	@echo "Deploying to $(target).."
 	@sleep 1
@@ -79,20 +85,20 @@ TAB = 20 # Increase if you have long commands
 help:
 	@printf '$(DIM2)Available make commands:$(NC)\n'
 	@# Print non-check commands with comments
-	@grep -E '^[a-zA-Z_-]+:.+#.+$$' $(MAKEFILE_LIST) \
+	@grep -E '^([a-zA-Z_-]+\.?)+:.+#.+$$' $(MAKEFILE_LIST) \
 		| grep -v '^check-' \
 		| sed 's/:.*#/: #/g' \
 		| awk 'BEGIN {FS = "[: ]+#[ ]+"}; \
 		{printf " $(DIM1)> make $(NC)$(PRIMARY)%-$(TAB)s $(NC)$(DIM2)# %s$(NC)\n", \
 			$$1, $$2}'
 	@# Print commands without comment only
-	@grep -E '^[a-zA-Z_-]+:( +\w+-\w+)*$$' $(MAKEFILE_LIST) \
+	@grep -E '^([a-zA-Z_-]+\.?)+:( +\w+-\w+)*$$' $(MAKEFILE_LIST) \
 		| grep -v help \
 		| awk 'BEGIN {FS = ":"}; \
 		{printf " $(DIM1)> make $(NC)$(PRIMARY)%-$(TAB)s$(NC)\n", \
 			$$1}'
 	@echo -e "${DIM1}-------- [checks] --------${NC}"
-	@grep -E '^[a-zA-Z_-]+:.+#.+$$' $(MAKEFILE_LIST) \
+	@grep -E '^([a-zA-Z_-]+\.?)+:.+#.+$$' $(MAKEFILE_LIST) \
 		| grep '^check-' \
 		| awk 'BEGIN {FS = "[: ]+#[ ]+"}; \
 		{printf " $(DIM1)> make $(NC)$(SECONDARY)%-$(TAB)s $(NC)$(DIM2)# %s$(NC)\n", \
