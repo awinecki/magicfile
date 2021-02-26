@@ -13,6 +13,9 @@ purge: # Clean up all local dev artifacts (node_modules, etc.)
 	@sleep 1
 	@echo "Done."
 
+pr: # Create a GitHub Pull Request via https://cli.github.com/
+	@gh pr create
+
 deploy: check-param check-dotenv # E.g. make deploy target=production
 	@echo "Deploying to $(target).."
 	@sleep 1
