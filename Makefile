@@ -19,7 +19,7 @@ setup: # Setup local dev environment
 	@sleep 1
 	@echo "Done."
 
-purge: # Clean up all local dev artifacts (node_modules, etc.)
+purge: confirm # Clean up all local dev artifacts (node_modules, etc.)
 	@echo "Purging.."
 	@sleep 1
 	@echo "Done."
@@ -47,6 +47,9 @@ logs:
 	tail -f *.log
 
 # ----------------- COMMON CHECKS  --------------------------
+
+confirm: # Simple y/N confirmation
+	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ] || (echo "Aborted!" && exit 1)
 
 check-param: # [CHECK] Checks if param is present: make key=value
 	@if [ "$(target)" = "" ]; then echo -e "${ERR}Missing param: target. Try: 'make cmd target=..'${NC}"; exit 1; fi
