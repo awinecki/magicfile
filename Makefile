@@ -27,7 +27,7 @@ purge: confirm # Clean up all local dev artifacts (node_modules, etc.)
 pr: # Create a GitHub Pull Request via https://cli.github.com/
 	@gh pr create
 
-push: check-param check-dotenv
+push: arg-target check-dotenv
 	@echo "Deploying to $(target).."
 	@sleep 1
 	@echo "Done. Successfully deployed to $(target)!"
@@ -38,7 +38,7 @@ db.init: # Initialize DB for development
 db.migrate: # Run DB migrations
 	@echo "DB migrated."
 
-deploy: check-param check-dotenv # E.g. make deploy target=production
+deploy: arg-target check-dotenv # E.g. make deploy target=production
 	@echo "Deploying to $(target).."
 	@sleep 1
 	@echo "Done. Successfully deployed to $(target)!"
@@ -51,7 +51,7 @@ logs:
 confirm: # Simple y/N confirmation
 	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ] || (echo "Aborted!" && exit 1)
 
-check-param: # [CHECK] Checks if param is present: make key=value
+arg-target: # [CHECK] Checks if param is present: make key=value
 	@if [ "$(target)" = "" ]; then echo -e "${ERR}Missing param: target. Try: 'make cmd target=..'${NC}"; exit 1; fi
 
 check-dotenv: # [CHECK] Checks if .env file is present
@@ -90,6 +90,7 @@ help:
 	@# Print non-check commands with comments
 	@grep -E '^([a-zA-Z0-9_-]+\.?)+:.+#.+$$' $(MAKEFILE_LIST) \
 		| grep -v '^check-' \
+		| grep -v '^arg-' \
 		| sed 's/:.*#/: #/g' \
 		| awk 'BEGIN {FS = "[: ]+#[ ]+"}; \
 		{printf " $(DIM1)> make $(NC)$(PRIMARY)%-$(TAB)s $(NC)$(DIM2)# %s$(NC)\n", \
@@ -102,7 +103,7 @@ help:
 			$$1}'
 	@echo -e "${DIM1}-------- [checks] --------${NC}"
 	@grep -E '^([a-zA-Z0-9_-]+\.?)+:.+#.+$$' $(MAKEFILE_LIST) \
-		| grep '^check-' \
+		| grep -E '^(check|arg)-' \
 		| awk 'BEGIN {FS = "[: ]+#[ ]+"}; \
 		{printf " $(DIM1)> make $(NC)$(SECONDARY)%-$(TAB)s $(NC)$(DIM2)# %s$(NC)\n", \
 			$$1, $$2}'
