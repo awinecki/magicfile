@@ -6,7 +6,7 @@ SHELL := /bin/bash
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 # Default params
-# target ?= "staging"
+# environment ?= "dev"
 
 # ---------------------- COMMANDS ---------------------------
 
@@ -35,7 +35,7 @@ push: arg-target check-dotenv
 db.init: # Initialize DB for development
 	@echo "DB initialized."
 
-db.migrate: # Run DB migrations
+db.migrate: env-MYSQL_HOST # Run DB migrations
 	@echo "DB migrated."
 
 deploy: arg-target check-dotenv # E.g. make deploy target=production
@@ -51,8 +51,11 @@ logs:
 confirm: # Simple y/N confirmation
 	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ] || (echo "Aborted!" && exit 1)
 
+env-MYSQL_HOST: # [CHECK] Checks for env variable
+	@if test -z ${MYSQL_HOST}; then echo -e "${ERR}Missing ENV VAR: MYSQL_HOST. Use 'ENV_VAR=value make <cmd>'${NC}"; exit 1; fi
+
 arg-target: # [CHECK] Checks if param is present: make key=value
-	@if [ "$(target)" = "" ]; then echo -e "${ERR}Missing param: target. Try: 'make cmd target=..'${NC}"; exit 1; fi
+	@if [ "$(target)" = "" ]; then echo -e "${ERR}Missing param: target. Use 'make <cmd> arg=value'${NC}"; exit 1; fi
 
 check-dotenv: # [CHECK] Checks if .env file is present
 	@if [ ! -f ".env" ]; then echo -e "${ERR}Missing .env file. Run 'cp .env.example .env'${NC}"; exit 1; fi
@@ -78,32 +81,43 @@ check-env-vars: # [CHECK] Checks if env vars are present
 .DEFAULT_GOAL := help
 # check https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
 NC = \033[0m
-PRIMARY = \033[33;1m
-SECONDARY = \033[94;1m
 ERR = \033[31;1m
-DIM1 = \033[38;5;239;1m
-DIM2 = \033[90;2m
-TAB = 20 # Increase if you have long commands
+TAB := '%-20s' # Increase if you have long commands
+
+# tput colors
+red := $(shell tput setaf 1)
+green := $(shell tput setaf 2)
+yellow := $(shell tput setaf 3)
+blue := $(shell tput setaf 4)
+cyan := $(shell tput setaf 6)
+cyan80 := $(shell tput setaf 86)
+grey500 := $(shell tput setaf 244)
+grey300 := $(shell tput setaf 240)
+bold := $(shell tput bold)
+underline := $(shell tput smul)
+reset := $(shell tput sgr0)
 
 help:
-	@printf '$(DIM2)Available make commands:$(NC)\n'
+	@printf '\n'
+	@printf '    $(underline)$(grey500)Available make commands:$(reset)\n\n'
 	@# Print non-check commands with comments
 	@grep -E '^([a-zA-Z0-9_-]+\.?)+:.+#.+$$' $(MAKEFILE_LIST) \
 		| grep -v '^check-' \
+		| grep -v '^env-' \
 		| grep -v '^arg-' \
 		| sed 's/:.*#/: #/g' \
 		| awk 'BEGIN {FS = "[: ]+#[ ]+"}; \
-		{printf " $(DIM1)> make $(NC)$(PRIMARY)%-$(TAB)s $(NC)$(DIM2)# %s$(NC)\n", \
+		{printf " $(grey300)   make $(reset)$(cyan80)$(bold)$(TAB) $(reset)$(grey300)# %s$(reset)\n", \
 			$$1, $$2}'
-	@# Print commands without comment only
 	@grep -E '^([a-zA-Z0-9_-]+\.?)+:( +\w+-\w+)*$$' $(MAKEFILE_LIST) \
 		| grep -v help \
 		| awk 'BEGIN {FS = ":"}; \
-		{printf " $(DIM1)> make $(NC)$(PRIMARY)%-$(TAB)s$(NC)\n", \
+		{printf " $(grey300)   make $(reset)$(cyan80)$(bold)$(TAB)$(reset)\n", \
 			$$1}'
-	@echo -e "${DIM1}-------- [checks] --------${NC}"
+	@echo -e "\n    $(underline)$(grey500)Helper/Checks$(reset)\n"
 	@grep -E '^([a-zA-Z0-9_-]+\.?)+:.+#.+$$' $(MAKEFILE_LIST) \
-		| grep -E '^(check|arg)-' \
+		| grep -E '^(check|arg|env)-' \
 		| awk 'BEGIN {FS = "[: ]+#[ ]+"}; \
-		{printf " $(DIM1)> make $(NC)$(SECONDARY)%-$(TAB)s $(NC)$(DIM2)# %s$(NC)\n", \
+		{printf " $(grey300)   make $(reset)$(grey500)$(TAB) $(reset)$(grey300)# %s$(reset)\n", \
 			$$1, $$2}'
+	@echo -e ""
