@@ -27,6 +27,9 @@ purge: confirm # Clean up all local dev artifacts (node_modules, etc.)
 pr: # Create a GitHub Pull Request via https://cli.github.com/
 	@gh pr create
 
+script: # Run .sh script and pass parameters
+	@./script.sh $(args)
+
 push: arg-target check-dotenv
 	@echo "Deploying to $(target).."
 	@sleep 1
