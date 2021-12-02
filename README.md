@@ -1,6 +1,6 @@
 # Magicfile ✨
 
-![screenshot](./screenshot.png)
+![screenshot](./screenshot-make.png)
 
 Simple `Makefile` template for situations when:
 
