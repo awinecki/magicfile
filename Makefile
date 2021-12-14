@@ -19,7 +19,7 @@ setup: # Setup local dev environment
 	@sleep 1
 	@echo "Done."
 
-purge: confirm # Clean up all local dev artifacts (node_modules, etc.)
+purge: check-confirm # Clean up all local dev artifacts (node_modules, etc.)
 	@echo "Purging.."
 	@sleep 1
 	@echo "Done."
@@ -51,14 +51,14 @@ logs:
 
 # ----------------- COMMON CHECKS  --------------------------
 
-confirm: # Simple y/N confirmation
-	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ] || (echo "Aborted!" && exit 1)
-
 env-MYSQL_HOST: # [CHECK] Checks for env variable
 	@if test -z ${MYSQL_HOST}; then echo -e "${ERR}Missing ENV VAR: MYSQL_HOST. Use 'ENV_VAR=value make <cmd>'${NC}"; exit 1; fi
 
 arg-target: # [CHECK] Checks if param is present: make key=value
 	@if [ "$(target)" = "" ]; then echo -e "${ERR}Missing param: target. Use 'make <cmd> arg=value'${NC}"; exit 1; fi
+
+check-confirm: # Simple y/N confirmation
+	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ] || (echo "Aborted!" && exit 1)
 
 check-dotenv: # [CHECK] Checks if .env file is present
 	@if [ ! -f ".env" ]; then echo -e "${ERR}Missing .env file. Run 'cp .env.example .env'${NC}"; exit 1; fi
