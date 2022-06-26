@@ -27,7 +27,7 @@ curl https://raw.githubusercontent.com/awinecki/magicfile/main/Makefile > Makefi
 
 Add regular `make` commands. Some tips:
 
-- Splitting commands on multiple lines is problematic in makefiles, but can be done with `/`
+- Splitting commands on multiple lines is problematic in makefiles, but can be done with `\`
 
   ```shell
   check-param: # [CHECK] Checks if param is present: make key=value
